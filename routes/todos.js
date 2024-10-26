@@ -3,7 +3,7 @@ const Todo = require('../models/todo')
 
 todoRouter.get('/:projectId', (request, response, next) => {
     Todo
-        .findById(request.params.projectId)
+        .find({ projectId: request.params.projectId })
         .then((todoList) => response.json(todoList))
         .catch(error => next(error))
 })
@@ -18,3 +18,5 @@ todoRouter.post('/:projectId', (request, response, next) => {
         .then(savedTodo => response.json(savedTodo))
         .catch(error => next(error))
 })
+
+module.exports = todoRouter

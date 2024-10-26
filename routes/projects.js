@@ -11,7 +11,7 @@ projectRouter.get('/', (request, response, next) => {
 
 projectRouter.post('/', (request, response, next) => {
     const project = new Project({
-        name: request.body,
+        name: request.body.name,
         todos: []
     })
     project
