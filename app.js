@@ -22,6 +22,7 @@ mongoose
     logger.error("error connecting to MongoDB:", error.message);
   });
 app.use(cors());
+app.use(express.static("dist"));
 app.use(express.json());
 app.use(middleware.requestLogger);
 
