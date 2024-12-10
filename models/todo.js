@@ -6,7 +6,11 @@ const todoSchema = new mongoose.Schema({
     priority: {type: String},
     dueDate: { type: Date },
     completed: {type: Boolean, default: false},
-    projectId: {type: mongoose.Schema.Types.ObjectId, ref: "Project", required: true}
+    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project", required: true },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'User'
+    }
 })
 
 todoSchema.set('toJSON', {
