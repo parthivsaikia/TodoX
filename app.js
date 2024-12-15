@@ -3,9 +3,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const projectRoutes = require("./routes/projects");
 const todoRoutes = require("./routes/todos");
+const userRoutes = require("./routes/users")
 const cors = require("cors");
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
+const loginRouter = require("./routes/login");
 
 mongoose.set("strictQuery", false);
 
@@ -28,6 +30,8 @@ app.use(middleware.requestLogger);
 
 app.use("/projects", projectRoutes);
 app.use("/todos", todoRoutes);
+app.use("/users", userRoutes)
+app.use("/login",loginRouter)
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
