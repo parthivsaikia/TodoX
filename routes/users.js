@@ -32,4 +32,4 @@ usersRouter.delete('/:id', async (request, response) => {
   response.status(204).end()
 })
 
-module.exports = usersRouter;
+module.exports = usersRouter

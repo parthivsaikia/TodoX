@@ -61,4 +61,4 @@ test("creation fails with proper statuscode and message if username already take
   assert(result.body.error.includes("expected `username` to be unique"));
 
   assert.strictEqual(usersAtEnd.length, usersAtStart.length);
-});
+})

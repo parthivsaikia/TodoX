@@ -4,26 +4,23 @@ const projectRouter = express.Router();
 const Project = require("../models/project");
 const { error } = require("../utils/logger");
 const jwt = require("jsonwebtoken");
+const middleware = require('../utils/middleware')
 
-const getTokenFrom = (request) => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.startsWith("Bearer")) {
-    return authorization.replace("Bearer ", "");
-  }
-  return null;
-};
+projectRouter.get(
+  "/",
+  middleware.userExtractor,
+  async (request, response, next) => {
+    const user = request.user;
+    const userId = user.id;
+    const projectList = await Project.find({ userId: userId }).populate(
+      "userId",
+    );
+    response.json(projectList);
+  },
+);
 
-projectRouter.get("/", async (request, response, next) => {
-  const projectList = await Project.find({}).populate("userId");
-  response.json(projectList);
-});
-
-projectRouter.post("/", async (request, response, next) => {
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
-  }
-  const user = await User.findById(decodedToken.id);
+projectRouter.post("/", middleware.userExtractor, async (request, response, next) => {
+  const user = request.user
   const project = new Project({
     name: request.body.name,
     userId: user,
@@ -34,15 +31,14 @@ projectRouter.post("/", async (request, response, next) => {
   response.status(201).json(savedProject);
 });
 
-projectRouter.delete("/:id", (request, response, next) => {
-  Project.findByIdAndDelete(request.params.id)
-    .then((result) => {
-      if (result) {
-        response.status(204).end();
-      }
-      response.status(404).json({ error: "Project not found." });
-    })
-    .catch((error) => next(error));
+projectRouter.delete("/:id", middleware.userExtractor, async(request, response, next) => {
+  const user = request.user
+  if (user.projects.includes(request.params.id)) {
+    await Project.findByIdAndDelete(request.params.id)
+    user.projects = user.projects.filter(projectId => projectId !== request.params.id)
+    await user.save()
+    response.status(204).end()
+  }
 });
 
 projectRouter.put("/:id", (request, response, next) => {
@@ -64,6 +60,6 @@ projectRouter.put("/:id", (request, response, next) => {
       }
     })
     .catch((error) => next(error));
-});
+})
 
-module.exports = projectRouter;
+module.exports = projectRouter
